@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+
+    "dependencies": {
+        "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
+        "Microsoft.Extensions.Configuration": "1.1.0",
+        "Microsoft.Extensions.Configuration.Binder": "1.1.0",
+        "Microsoft.Extensions.Configuration.Json": "1.1.0",
+        "NETStandard.Library": "1.6.1",
+        "System.Composition": "1.0.31",
+        "System.Runtime.Loader": "4.3.0"
+    },
+
+  "frameworks": {
+    "netstandard1.6": {
+        "imports": "netstandard1.6"
+    }
+  }
+}
