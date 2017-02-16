@@ -65,6 +65,7 @@ namespace OpenBlackboard.Model
         private NCalc.Expression CreateExpression(string expression)
         {
             var expr = new NCalc.Expression(expression, NCalc.EvaluateOptions.IgnoreCase);
+            expr.Parameters.Add("null", null);
             expr.EvaluateFunction += EvaluateFunction;
             expr.EvaluateParameter += EvaluateParameter;
 
@@ -76,7 +77,7 @@ namespace OpenBlackboard.Model
             if (String.Equals(name, "isnull", StringComparison.OrdinalIgnoreCase))
             {
                 args.HasResult = true;
-                args.Result = args.EvaluateParameters().All(x => x == null);
+                args.Result = args.EvaluateParameters().Any(x => x == null);
             }
         }
 

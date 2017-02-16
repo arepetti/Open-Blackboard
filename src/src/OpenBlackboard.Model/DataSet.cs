@@ -195,15 +195,15 @@ namespace OpenBlackboard.Model
         public void Calculate()
         {
             // We perform a two steps validation, first using only external values and values with default; if validation
-            // fails here then we do not need to calculate anything else (because missing or invalid values
+            // fails here then we do not need to calculate anything else (because missing or invalid values will cause
+            // also calculated values to fail).
             var notCalculatedValues = FindDescriptorsWithoutExpression(x => x.CalculatedValueExpression);
             CheckRules(checkForWarnings: true, descriptors: notCalculatedValues);
 
             if (!CheckRules(checkForWarnings: false, descriptors: notCalculatedValues))
                 return;
 
-            // Then, if we passed basic validation we can validate calculated values (this is a micro optimization to
-            // do not calculate values for broken input and to avoid to validate calculated values if their inputs aren't good.
+            // Then, if we passed basic validation we can validate calculated values.
             var calculatedValues = PopulateCalculatedValues();
             CheckRules(checkForWarnings: true, descriptors: calculatedValues);
             CheckRules(checkForWarnings: false, descriptors: calculatedValues);

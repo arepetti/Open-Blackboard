@@ -250,6 +250,18 @@ namespace OpenBlackboard.Model.Tests
         }
 
         [Fact]
+        public void GivenAnExpressionWithMultipleArgumentsForIssNull_ThenItReturnsTrueIfAnyArgumentIsNull()
+        {
+            var protocol = ProtocolFactory.CreateTest();
+            protocol.Sections.First().Values.Add(new ValueDescriptor { Reference = "a", ValidIfExpression = "isnull(1, 'text', null)" });
+
+            var dataset = new DataSet(protocol);
+            dataset.Calculate();
+
+            Assert.Equal(0, dataset.Issues.Count);
+        }
+
+        [Fact]
         public void GivenExpressionWithThisKeyword_ThenItIsSynonimOfCurrentValueId()
         {
             var protocol = ProtocolFactory.CreateTest();
