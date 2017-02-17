@@ -56,7 +56,7 @@ namespace OpenBlackboard.Model.Tests
             // Note that the same expression may cause more than one issue if it is evaluated
             // multiple times (especially EnabledIfExpression because it's used to filter out the list
             // of descriptors). Errors in model are a development thing that won't happen in production
-            // then it's easier to leave this as-is than changing design di handle this corner case.
+            // then it's easier to leave this as-is than changing design to handle this corner case.
             Assert.True(dataset.Issues.Count > 3);
         }
 
@@ -250,7 +250,7 @@ namespace OpenBlackboard.Model.Tests
         }
 
         [Fact]
-        public void GivenAnExpressionWithMultipleArgumentsForIssNull_ThenItReturnsTrueIfAnyArgumentIsNull()
+        public void GivenAnExpressionWithMultipleArgumentsForIsNull_ThenItReturnsTrueIfAnyArgumentIsNull()
         {
             var protocol = ProtocolFactory.CreateTest();
             protocol.Sections.First().Values.Add(new ValueDescriptor { Reference = "a", ValidIfExpression = "isnull(1, 'text', null)" });
