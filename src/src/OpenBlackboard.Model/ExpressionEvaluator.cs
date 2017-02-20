@@ -129,12 +129,12 @@ namespace OpenBlackboard.Model
             else if (String.Equals(name, FunctionCount, StringComparison.OrdinalIgnoreCase))
             {
                 args.HasResult = true;
-                args.Result = AggregationFunctions.Count(_descriptor.Value, _dataset.Culture, AggregationFunctions.Unroll(args.EvaluateParameters()));
+                args.Result = AggregationFunctions.Count(_descriptor.Value, _dataset.Culture, AggregationFunctions.Unpack(args.EvaluateParameters()));
             }
             else if (String.Equals(name, FunctionAverage, StringComparison.OrdinalIgnoreCase))
             {
                 args.HasResult = true;
-                args.Result = AggregationFunctions.Average(_descriptor.Value, _dataset.Culture, AggregationFunctions.Unroll(args.EvaluateParameters()));
+                args.Result = AggregationFunctions.Average(_descriptor.Value, _dataset.Culture, AggregationFunctions.Unpack(args.EvaluateParameters()));
             }
             else if (String.Equals(name, FunctionLet, StringComparison.OrdinalIgnoreCase))
             {

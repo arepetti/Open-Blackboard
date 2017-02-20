@@ -8,7 +8,7 @@ namespace OpenBlackboard.Model
 {
     static class AggregationFunctions
     {
-        public static IEnumerable<object> Unroll(IEnumerable<object> values)
+        public static IEnumerable<object> Unpack(IEnumerable<object> values)
         {
             foreach (var value in values)
             {
@@ -17,7 +17,7 @@ namespace OpenBlackboard.Model
                     yield return value;
                 else
                 {
-                    foreach (var innerValue in Unroll(enumerable))
+                    foreach (var innerValue in Unpack(enumerable))
                         yield return innerValue;
                 }
             }
