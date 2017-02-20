@@ -7,6 +7,8 @@ namespace OpenBlackboard.Model
 {
     sealed class DataSetValueAccumulator
     {
+        public bool IsEmpty => _items.Count == 0;
+
         public IEnumerable<object> this[ValueDescriptor descriptor]
         {
             get
@@ -47,6 +49,8 @@ namespace OpenBlackboard.Model
 
         public void Clear()
         {
+            Debug.Assert(_items != null);
+
             _items.Clear();
         }
 

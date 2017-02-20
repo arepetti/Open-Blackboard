@@ -122,6 +122,7 @@ namespace OpenBlackboard.Model
         {
             Debug.Assert(_protocol != null);
             Debug.Assert(_accumulator != null);
+            Debug.Assert(_accumulator.IsEmpty || _culture != null);
 
             var result = new DataSet(_protocol);
 
@@ -148,6 +149,9 @@ namespace OpenBlackboard.Model
 
         private object Transform(DataSet dataset, ValueDescriptor descriptor, object value)
         {
+            Debug.Assert(dataset != null);
+            Debug.Assert(descriptor != null);
+
             if (String.IsNullOrWhiteSpace(descriptor.TransformationForAggregationExpression))
                 return value;
 
@@ -163,6 +167,9 @@ namespace OpenBlackboard.Model
 
         private IEnumerable<object> Filter(ValueDescriptor descriptor, IEnumerable<object> values)
         {
+            Debug.Assert(descriptor != null);
+            Debug.Assert(values != null);
+
             if (descriptor.PreferredAggregation == AggregationMode.Count && Options.HasFlag(AggregationOptions.ExcludeNullValuesFromCount))
                 return values.Where(x => x != null);
 
@@ -171,6 +178,10 @@ namespace OpenBlackboard.Model
 
         private object Aggregate(DataSet dataset, ValueDescriptor descriptor, IEnumerable<object> values)
         {
+            Debug.Assert(descriptor != null);
+            Debug.Assert(values != null);
+            Debug.Assert(_accumulator.IsEmpty || _culture != null);
+
             if (!String.IsNullOrWhiteSpace(descriptor.AggregationExpression))
             {
                 var evaluator = new ExpressionEvaluator(dataset);
