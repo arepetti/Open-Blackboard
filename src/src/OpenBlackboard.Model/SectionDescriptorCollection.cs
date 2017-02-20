@@ -12,6 +12,19 @@ namespace OpenBlackboard.Model
     public sealed class SectionDescriptorCollection : Collection<SectionDescriptor>
     {
         /// <summary>
+        /// Adds a new section with the specified name.
+        /// </summary>
+        /// <param name="name">Name of the section to add.</param>
+        /// <returns>The newly added empty section</returns>.
+        public SectionDescriptor Add(string name)
+        {
+            var section = new SectionDescriptor { Name = name };
+            Add(section);
+
+            return section;
+        }
+
+        /// <summary>
         /// Enumerate through all the <see cref="ValueDescriptor"/> of all the
         /// <see cref="SectionDescriptor"/> of this collection.
         /// </summary>

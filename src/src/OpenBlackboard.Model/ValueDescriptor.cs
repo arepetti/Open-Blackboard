@@ -12,7 +12,7 @@ namespace OpenBlackboard.Model
     /// submitted as <see cref="DataSetValue"/>.
     /// </summary>
     [DebuggerDisplay("{Reference} : {Type}")]
-    public sealed class ValueDescriptor : NamedItemDescriptor, IReferenceable
+    public sealed class ValueDescriptor : NamedItemDescriptor, IReferenceable, IEquatable<ValueDescriptor>
     {
         /// <summary>
         /// Gets/sets the unique ID used to identify this value within all the other
@@ -154,7 +154,17 @@ namespace OpenBlackboard.Model
         /// An expression used to pre-compute/transform the value of the field before aggregation.
         /// </value>
         [DefaultValue(""), JsonProperty("TransformationForAggregation")]
-        public string TransformationForAggregation { get; set; } = "";
+        public string TransformationForAggregationExpression { get; set; } = "";
+
+        /// <summary>
+        /// Gets/sets the expression applied to aggregate values. 
+        /// </summary>
+        /// <value>
+        /// An expression used to aggregate values of this field. If value is specified then
+        /// <see cref="PreferredAggregation"/> is ignored.
+        /// </value>
+        [DefaultValue(""), JsonProperty("Aggregation")]
+        public string AggregationExpression { get; set; } = "";
 
         /// <summary>
         /// Gets the list of all children values related to this field.
@@ -182,9 +192,29 @@ namespace OpenBlackboard.Model
             return AvailableValues.Count > 0;
         }
 
+        /// <summary>
+        /// Compares this descriptor with another one to determine if they both
+        /// represent the same field.
+        /// </summary>
+        /// <param name="other">Another descriptor to compare with this one.</param>
+        /// <returns>
+        /// <see langword="true"/> if both descriptors represent the same field. Equality is determined
+        /// only using <see cref="Reference"/> ID, regardless of descriptor's other properties and content.
+        /// Note that two descriptors from different protocols will compare equals if they have the same ID.
+        /// </returns>
+        public bool Equals(ValueDescriptor other)
+        {
+            return String.Equals(Reference, other?.Reference, StringComparison.OrdinalIgnoreCase);
+        }
+
         public override int GetHashCode()
         {
             return Reference?.GetHashCode() ?? 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ValueDescriptor);
         }
 
         internal IEnumerable<ModelError> ValidateModel()
@@ -206,7 +236,7 @@ namespace OpenBlackboard.Model
             if (!String.IsNullOrWhiteSpace(WarningMessage) && String.IsNullOrWhiteSpace(WarningIfExpression))
                 yield return Warning($"{nameof(WarningMessage)} should not be specified without {nameof(WarningIfExpression)}.");
 
-            if (String.IsNullOrWhiteSpace(TransformationForAggregation))
+            if (String.IsNullOrWhiteSpace(TransformationForAggregationExpression))
             {
                 bool aggregationRequiresNumericValue = PreferredAggregation == AggregationMode.Average
                     || PreferredAggregation == AggregationMode.Sum;
@@ -216,8 +246,11 @@ namespace OpenBlackboard.Model
             }
             else if (PreferredAggregation == AggregationMode.None)
             {
-                yield return Error($"{nameof(TransformationForAggregation)} cannot be specified with aggregation mode {nameof(AggregationMode.None)}.");
+                yield return Error($"{nameof(TransformationForAggregationExpression)} cannot be specified with aggregation mode {nameof(AggregationMode.None)}.");
             }
+
+            if (!String.IsNullOrWhiteSpace(AggregationExpression) && PreferredAggregation != AggregationMode.None)
+                yield return Warning($"{nameof(PreferredAggregation)} is ignored when {nameof(AggregationExpression)} is specified.");
         }
 
         internal IEnumerable<ValueDescriptor> VisitAllValues()

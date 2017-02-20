@@ -4,10 +4,8 @@ using System.Linq;
 
 namespace OpenBlackboard.Hosting
 {
-    sealed class Multimap<TKey, TValue>
+    sealed class ServiceDictionary<TKey, TValue>
     {
-        public IEnumerable<TKey> Keys => _items.Keys;
-
         public void Add(TKey key, TValue value)
         {
             List<TValue> list;
@@ -42,11 +40,6 @@ namespace OpenBlackboard.Hosting
                 return list;
 
             return Enumerable.Empty<TValue>();
-        }
-
-        public bool Contains(TKey key)
-        { 
-            return _items.ContainsKey(key);
         }
 
         private readonly Dictionary<TKey, List<TValue>> _items = new Dictionary<TKey, List<TValue>>();

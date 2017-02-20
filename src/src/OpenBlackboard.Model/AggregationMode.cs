@@ -36,7 +36,7 @@ namespace OpenBlackboard.Model
         /// <summary>
         /// Aggregation of this value is the number of non empty instances regardless their value. If you need
         /// to count non empty strings then you should use <see cref="AggregationMode.Sum"/> with a transformation
-        /// expression to return 1 when string is not empty.
+        /// expression to return 1 when string is not empty. Null values for existing instances are counted.
         /// </summary>
         Count,
     }

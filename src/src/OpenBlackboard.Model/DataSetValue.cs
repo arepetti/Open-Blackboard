@@ -32,6 +32,6 @@ namespace OpenBlackboard.Model
         /// its textual representation). If a conversion is required then it is performed according to
         /// <see cref="DataSet.Culture"/>.
         /// </value>
-        public object Value { get; set; }
+        public object Value { get; }
     }
 }

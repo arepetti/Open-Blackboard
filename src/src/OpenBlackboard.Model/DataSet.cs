@@ -30,6 +30,11 @@ namespace OpenBlackboard.Model
         /// if a conversion is required (see <see cref="Culture"/>).
         /// </remarks>
         public DataSet(ProtocolDescriptor protocol)
+            : this(protocol, true)
+        {
+        }
+
+        internal DataSet(ProtocolDescriptor protocol, bool populateWithInitialValues)
         {
             if (protocol == null)
                 throw new ArgumentNullException(nameof(protocol));
@@ -56,10 +61,11 @@ namespace OpenBlackboard.Model
 
                 // It's done here instead of in Calculate() because external values (included with Add()) may
                 // overwrite them but we don't want to overwrite external values with their defaults.
-                PopulateInitialValues();
+                if (populateWithInitialValues)
+                    PopulateInitialValues();
             }
         }
-
+        
         /// <summary>
         /// Gets the protocol that contains the definition of submitted values.
         /// </summary>
@@ -91,6 +97,10 @@ namespace OpenBlackboard.Model
         /// When a conversion is required for <see cref="DataSetValue.Value"/> it is performed
         /// using this culture. Default value is <see cref="CultureInfo.InvariantCulture"/>.
         /// </value>
+        /// <remarks>
+        /// Usually it's not necessary to change this property, input values are already in the required format
+        /// and conversions are necessary only for expressions (which are usually written using invariant culture).
+        /// </remarks>
         /// <exception cref="ArgumentNullException">
         /// If the specified value is <see langword="null"/>.
         /// </exception>
@@ -207,6 +217,8 @@ namespace OpenBlackboard.Model
             var calculatedValues = PopulateCalculatedValues();
             CheckRules(checkForWarnings: true, descriptors: calculatedValues);
             CheckRules(checkForWarnings: false, descriptors: calculatedValues);
+
+            IsChangedAfterLastCalculation = false;
         }
 
         /// <summary>
@@ -236,6 +248,12 @@ namespace OpenBlackboard.Model
             get;
         }
 
+        internal bool IsChangedAfterLastCalculation
+        {
+            get;
+            private set;
+        }
+
         private CultureInfo _culture;
         private readonly ExpressionEvaluator _evaluator;
         private readonly Dictionary<string, ValueDescriptor> _cachedDescriptorsLookUp;
@@ -245,16 +263,14 @@ namespace OpenBlackboard.Model
             Debug.Assert(Values != null);
             Debug.Assert(descriptor != null && !String.IsNullOrWhiteSpace(descriptor.Reference));
 
-            DataSetValue item;
-            if (Values.TryGetValue(descriptor.Reference, out item))
-            {
-                item.Value = value;
-            }
-            else
-            {
-                item = new DataSetValue(descriptor, value);
-                Values.Add(descriptor.Reference, item);
-            }
+            // TryGetValue() approach is faster but it's easier to keep DataSetValue immutable
+            // because we do not need to track external changes and we just use IsChangedAfterLastCalculation.
+            Values.Remove(descriptor.Reference);
+
+            var item = new DataSetValue(descriptor, value);
+            Values.Add(descriptor.Reference, item);
+
+            IsChangedAfterLastCalculation = true;
 
             return item;
         }
@@ -330,6 +346,9 @@ namespace OpenBlackboard.Model
                 if (Values.TryGetValue(descriptor.Reference, out item))
                     itemValue = item.Value;
 
+                // CHECK: message is not localized assuming that for every validation rule there will be
+                // a clear ad-hoc description (and this is just for debugging purposes). If it will be not the case
+                // then move this text to resources.
                 string message = checkForWarnings ? descriptor.WarningMessage : descriptor.ValidationMessage;
                 if (String.IsNullOrWhiteSpace(message))
                     message = $"Value '{itemValue}' for '{descriptor.Reference}' is not valid.";

@@ -24,6 +24,21 @@ namespace OpenBlackboard.Model.Tests
         }
 
         [Fact]
+        public void GivenPreferredAggregationWithAggregationExpression_ThenAddIssue()
+        {
+            var protocol = ProtocolFactory.CreateTest();
+            Assert.Empty(protocol.ValidateModel());
+
+            var value = protocol[ProtocolFactory.WeightFieldId];
+
+            value.PreferredAggregation = AggregationMode.Sum;
+            value.AggregationExpression = "sum(values)";
+
+
+            Assert.Equal(1, protocol.ValidateModel().Count(x => x.Severity == IssueSeverity.Warning));
+        }
+
+        [Fact]
         public void GivenStringFieldAggregatedWithAverage_ThenAddIssue()
         {
             var protocol = ProtocolFactory.CreateTest();
@@ -38,7 +53,7 @@ namespace OpenBlackboard.Model.Tests
             Assert.Equal(1, protocol.ValidateModel().Count());
 
             // ...unless we supply a custom transformation
-            value.TransformationForAggregation = "length(this)"; // Code is not really parsed during model validation...
+            value.TransformationForAggregationExpression = "length(this)"; // Code is not really parsed during model validation...
             Assert.Equal(0, protocol.ValidateModel().Count());
         }
 

@@ -201,7 +201,7 @@ namespace OpenBlackboard.Hosting
             return _services.GetAll(typeof(TService)).Cast<TService>();
         }
 
-        private readonly Multimap<Type, Service> _services = new Multimap<Type, Service>();
+        private readonly ServiceDictionary<Type, Service> _services = new ServiceDictionary<Type, Service>();
 
         private static bool InstanceImplementsService(Type serviceType, object serviceInstance)
         {

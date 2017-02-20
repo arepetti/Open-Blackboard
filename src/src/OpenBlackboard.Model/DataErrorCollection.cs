@@ -12,6 +12,33 @@ namespace OpenBlackboard.Model
     [DebuggerDisplay("{DebuggerDisplay}")]
     public sealed class DataErrorCollection : Collection<DataError>
     {
+        /// <summary>
+        /// Gets all the errors of this collection.
+        /// </summary>
+        /// <value>
+        /// All the errors (severity <see cref="IssueSeverity.ModelError"/> or <see cref="IssueSeverity.ValidationError"/>)
+        /// of this collection.
+        /// </value>
+        public IEnumerable<DataError> Errors => Items.Where(x => x.Severity != IssueSeverity.Warning);
+
+        /// <summary>
+        /// Gets all the warnings of this collection.
+        /// </summary>
+        /// <value>
+        /// All the warnings (severity <see cref="IssueSeverity.Warning"/>) of this collection.
+        /// </value>
+        public IEnumerable<DataError> Warnings => Items.Where(x => x.Severity == IssueSeverity.Warning);
+
+        /// <summary>
+        /// Indicates whether this collection contains any error.
+        /// </summary>
+        /// <value>
+        /// <see langword="true"/> if any issue in this collection is a <see cref="IssueSeverity.ModelError"/> or
+        /// <see cref="IssueSeverity.ValidationError"/>; <see langword="false"/> if collection is empty or it contains
+        /// only <see cref="IssueSeverity.Warning"/>.
+        /// </value>
+        public bool HasErrors => Errors.Any();
+
         internal void AddWarning(ValueDescriptor item, string message)
         {
             Add(new DataError(IssueSeverity.Warning, item, message));
